@@ -8,20 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleAggregator {
-    class Aggregator : CalculatorBase {
+    class Aggregator {
         List<EventsInfo> basis = null;
         List<Aggregation> aggregations = new List<Aggregation>();
 
         ConcurrentDictionary<string, EventsInfo> current = new ConcurrentDictionary<string, EventsInfo>();
 
-        public Aggregator(BackgroundWorker worker, CalculatorOptions options) : base(worker, options) {
+        public Aggregator() {
 
         }
 
-        public override void Begin() {
+        public void Begin() {
             current.Clear();
         }
-        public override void End(int timeIndex) {
+        public void End(int timeIndex) {
             if(basis == null) {
                 basis = new List<EventsInfo>() {
                     current.Values.ElementAt(0),
@@ -44,16 +44,16 @@ namespace SimpleAggregator {
             });
             current.Clear();
         }
-        public override void WriteResult(StreamWriter writer) {
+        public void WriteResult(StreamWriter writer) {
             foreach(Aggregation info in aggregations) {
                 //writer.WriteLine("========= Time: {0} ({1} - {2})==========", info.Key, info.Value.StartTime, info.Value.EndTime);
-                info.WriteToFile(writer, worker);
+                info.WriteToFile(writer);
             }
 
         }
 
         static object locker = new { };
-        public override void AddValue(string rowName, string[] colNames) {
+        public void AddValue(string rowName, string[] colNames) {
             foreach(var colName in colNames) {
                 current.GetOrAdd(rowName, (key) => new EventsInfo()).Increment(colName);
             }
@@ -64,7 +64,7 @@ namespace SimpleAggregator {
         public string[] RowNames { get; set; }
         public int[,] Matrix { get; set; }
 
-        public void WriteToFile(StreamWriter writer, BackgroundWorker worker) {
+        public void WriteToFile(StreamWriter writer) {
             var dim1 = Matrix.GetUpperBound(0) + 1;
             var dim2 = Matrix.GetUpperBound(1) + 1;
             for(int i = 0; i < dim1; i++) {

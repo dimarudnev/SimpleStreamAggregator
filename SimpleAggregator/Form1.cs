@@ -48,9 +48,8 @@ namespace SimpleAggregator {
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
             var options = (CalculatorOptions)e.Argument;
             BackgroundWorker bw = sender as BackgroundWorker;
-            var calc = new Aggregator(bw, options);
-
-
+            var calc = new Aggregator();
+            bw.ReportProgress(0, "Reading and calculating...");
             var readers = new List<ReaderBase> {
                 new ProcReader(options, calc),
                 new DnsReader(options, calc),
@@ -66,14 +65,15 @@ namespace SimpleAggregator {
                 bw.ReportProgress((int)(((i + 1) * 100) / options.FrameCount));
                 calc.End(i);
             }
+            readers.ForEach(reader => reader.Dispose());
+
+            bw.ReportProgress(0, "Writing result...");
             var resultFile = options.DestinationPath + options.ResultFileName + ".csv";
             using(var fileStream = new FileStream(resultFile, FileMode.Create)) {
                 using(var streamWriter = new StreamWriter(fileStream)) {
                     calc.WriteResult(streamWriter);
                 }
             }
-            e.Cancel = calc.Cancelled;
-            e.Result = calc.Result;
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -81,7 +81,7 @@ namespace SimpleAggregator {
                 this.progressBar1.Value = 0;
                 this.label4.Text = "Cancelled";
             } else {
-                this.label4.Text = String.Format("Ready! Line count: {0}.", e.Result.ToString());
+                this.label4.Text = String.Format("Ready!");
             }
         }
 

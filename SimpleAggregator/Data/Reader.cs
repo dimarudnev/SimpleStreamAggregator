@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SimpleAggregator {
     abstract class ReaderBase {
-        CalculatorBase calculator;
+        Aggregator aggregator;
         FileStream fileStream;
         StreamReader streamReader;
         CalculatorOptions options;
 
         protected abstract string FileName { get; }
 
-        public ReaderBase(CalculatorOptions options, CalculatorBase calculator) {
+        public ReaderBase(CalculatorOptions options, Aggregator aggregator) {
             this.options = options;
-            this.calculator = calculator;
+            this.aggregator = aggregator;
             fileStream = new FileStream(Path.Combine(options.SourcePath, FileName), FileMode.Open);
             streamReader = new StreamReader(fileStream);
 
@@ -35,17 +35,24 @@ namespace SimpleAggregator {
                 var timeStamp = GetTimeStamp(lineParts);
                 int currentTimeIndex = (int)(timeStamp / this.options.TimeFrame);
                 if(timeIndex == currentTimeIndex) {
-                    calculator.AddValue(GetRowValue(lineParts), GetColumnValues(lineParts));
+                    aggregator.AddValue(GetRowValue(lineParts), GetColumnValues(lineParts));
                 } else {
                     break;
                 }
             }
         }
+
+        internal void Dispose() {
+            streamReader.Close();
+            streamReader.Dispose();
+            fileStream.Close();
+            fileStream.Dispose();
+        }
     }
     class ProcReader : ReaderBase {
         protected override string FileName { get { return "proc.txt"; } }
 
-        public ProcReader(CalculatorOptions options, CalculatorBase calculator) : base(options, calculator) {
+        public ProcReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
 
         }
 
@@ -60,7 +67,7 @@ namespace SimpleAggregator {
     class DnsReader : ReaderBase {
         protected override string FileName { get { return "dns.txt"; } }
 
-        public DnsReader(CalculatorOptions options, CalculatorBase calculator) : base(options, calculator) {
+        public DnsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
 
         }
 
@@ -75,7 +82,7 @@ namespace SimpleAggregator {
     class FlowsReader : ReaderBase {
         protected override string FileName { get { return "flows.txt"; } }
 
-        public FlowsReader(CalculatorOptions options, CalculatorBase calculator) : base(options, calculator) {
+        public FlowsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
 
         }
 
