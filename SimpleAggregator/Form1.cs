@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace SimpleAggregator {
     public partial class Form1 : Form {
@@ -108,7 +109,7 @@ namespace SimpleAggregator {
         List<EventsInfo> basis = null;
         List<Aggregation> aggregations = new List<Aggregation>();
 
-        Dictionary<string, EventsInfo> current = new Dictionary<string, EventsInfo>();
+        ConcurrentDictionary<string, EventsInfo> current = new ConcurrentDictionary<string, EventsInfo>();
 
         public Aggregator(BackgroundWorker worker, CalculatorOptions options) : base(worker, options) {
             
@@ -150,19 +151,8 @@ namespace SimpleAggregator {
 
         static object locker = new { };
         public override void AddValue(string rowName, string[] colNames) {
-            lock (locker) {
-                foreach(var colName in colNames) {
-                    EventsInfo row;
-                    if(!current.TryGetValue(rowName, out row)) {
-                        row = new EventsInfo();
-                        current.Add(rowName, row);
-                    }
-                    if(row.ContainsKey(colName)) {
-                        row[colName]++;
-                    } else {
-                        row.Add(colName, 1);
-                    }
-                }
+            foreach(var colName in colNames) {
+                current.GetOrAdd(rowName, (key) => new EventsInfo()).Increment(colName);
             }
         }
     }
@@ -186,7 +176,11 @@ namespace SimpleAggregator {
             }
         }
     }
-    class EventsInfo : Dictionary<string, int> {
+    class EventsInfo : ConcurrentDictionary<string, int> {
+
+        public void Increment(string value) {
+            this.AddOrUpdate(value, 1, (key, oldValue) => { return oldValue + 1; });
+        }
         public static int CalcDictance(EventsInfo value1, EventsInfo value2) {
             var distance = 0;
             var intersectKeys = value1.Keys.Intersect(value2.Keys);
