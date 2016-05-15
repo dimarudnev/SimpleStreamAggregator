@@ -34,7 +34,7 @@ namespace SimpleAggregator {
                     DestinationPath = @"D:\Data\LANL\",
                     TimeFrame = Convert.ToInt32(this.textBox4.Text),
                     FrameCount = Convert.ToInt32(this.textBox5.Text),
-                    FilePostfix = this.textBox6.Text
+                    ResultFileName = this.textBox6.Text
                 });
             }
         }
@@ -66,7 +66,7 @@ namespace SimpleAggregator {
                 bw.ReportProgress((int)(((i + 1) * 100) / options.FrameCount));
                 calc.End(i);
             }
-            var resultFile = options.DestinationPath + options.FilePostfix;
+            var resultFile = options.DestinationPath + options.ResultFileName + ".csv";
             using(var fileStream = new FileStream(resultFile, FileMode.Create)) {
                 using(var streamWriter = new StreamWriter(fileStream)) {
                     calc.WriteResult(streamWriter);
@@ -96,11 +96,8 @@ namespace SimpleAggregator {
         }
     }
     class CalculatorOptions {
-        internal string FilePostfix;
-
+        public string ResultFileName { get; set; }
         public string SourcePath { get; set; }
-        public int ColIndex { get; set; }
-        public int RowIndex { get; set; }
         public int TimeFrame { get; set; }
         public int FrameCount { get; set; }
         public string DestinationPath { get; internal set; }
