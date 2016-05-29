@@ -51,9 +51,10 @@ namespace SimpleAggregator {
             var calc = new Aggregator();
             bw.ReportProgress(0, "Reading and calculating...");
             var readers = new List<ReaderBase> {
-                new ProcReader(options, calc),
-                new DnsReader(options, calc),
-                new FlowsReader(options, calc)
+                //new ProcReader(options, calc),
+                //new DnsReader(options, calc),
+                //new FlowsReader(options, calc)
+                new AuthReader(options, calc),
             };
             for(int i = 0; i < options.FrameCount; i++) {
                 calc.Begin();

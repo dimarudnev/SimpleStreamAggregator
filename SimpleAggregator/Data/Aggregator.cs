@@ -24,8 +24,8 @@ namespace SimpleAggregator {
         public void End(int timeIndex) {
             if(basis == null) {
                 basis = new List<EventsInfo>() {
-                    current.Values.ElementAt(0),
-                    current.Values.ElementAt(100)
+                    current.Keys.Contains("C1") ? current["C1"] : current.Values.ElementAt(0),
+                    current.Keys.Contains("C181") ? current["C181"] : current.Values.ElementAt(100),
                 };
             }
             int[,] matrix = new int[current.Keys.Count, basis.Count];
@@ -45,6 +45,7 @@ namespace SimpleAggregator {
             current.Clear();
         }
         public void WriteResult(StreamWriter writer) {
+            writer.WriteLine("T,C,V1,V2");
             foreach(Aggregation info in aggregations) {
                 //writer.WriteLine("========= Time: {0} ({1} - {2})==========", info.Key, info.Value.StartTime, info.Value.EndTime);
                 info.WriteToFile(writer);
@@ -80,25 +81,28 @@ namespace SimpleAggregator {
         }
     }
     class EventsInfo : ConcurrentDictionary<string, int> {
-
+       
         public void Increment(string value) {
-            this.AddOrUpdate(value, 1, (key, oldValue) => { return oldValue + 1; });
+            this.AddOrUpdate(value, 1, (key, oldValue) => {
+                return oldValue + 1;
+            });
         }
         public static int CalcDictance(EventsInfo value1, EventsInfo value2) {
-            var distance = 0;
+            const double pow = 2;
+            double distance = 0;
             var intersectKeys = value1.Keys.Intersect(value2.Keys);
             var uniqueKeysForValue1 = value1.Keys.Except(intersectKeys);
             var uniqueKeysForValue2 = value2.Keys.Except(intersectKeys);
             foreach(string key in intersectKeys) {
-                distance += (int)Math.Pow(value1[key] - value2[key], 2);
+                distance += Math.Pow(Math.Abs(value1[key] - value2[key]), pow);
             }
             foreach(string key in uniqueKeysForValue1) {
-                distance += (int)Math.Pow(value1[key], 2);
+                distance += Math.Pow(Math.Abs(value1[key]), pow);
             }
             foreach(string key in uniqueKeysForValue2) {
-                distance += (int)Math.Pow(value2[key], 2);
+                distance += Math.Pow(Math.Abs(value2[key]), pow);
             }
-            return (int)Math.Sqrt(distance);
+            return (int)Math.Pow(distance, 1D/ pow);
         }
     }
 }

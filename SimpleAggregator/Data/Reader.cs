@@ -50,6 +50,7 @@ namespace SimpleAggregator {
         }
     }
     class ProcReader : ReaderBase {
+        //1,C553$@DOM1,C553,P16,Start
         protected override string FileName { get { return "proc.txt"; } }
 
         public ProcReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
@@ -65,6 +66,7 @@ namespace SimpleAggregator {
         }
     }
     class DnsReader : ReaderBase {
+        //31,C161,C2109
         protected override string FileName { get { return "dns.txt"; } }
 
         public DnsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
@@ -80,18 +82,27 @@ namespace SimpleAggregator {
         }
     }
     class FlowsReader : ReaderBase {
+        //1,9,C3090,N10471,C3420,N46,6,3,144
         protected override string FileName { get { return "flows.txt"; } }
 
-        public FlowsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
-
-        }
-
+        public FlowsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
         protected override string[] GetColumnValues(string[] lineParts) {
             return new string[1] { "flows" + lineParts[4] + lineParts[5] };
         }
-
         protected override string GetRowValue(string[] lineParts) {
             return lineParts[2];
+        }
+    }
+    class AuthReader : ReaderBase {
+        //1,C625$@DOM1,U147@DOM1,C625,C625,Negotiate,Batch,LogOn,Success
+        protected override string FileName { get { return "auth.txt"; } }
+
+        public AuthReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
+        protected override string[] GetColumnValues(string[] lineParts) {
+            return new string[1] { lineParts[8] };
+        }
+        protected override string GetRowValue(string[] lineParts) {
+            return lineParts[3];
         }
     }
 }
