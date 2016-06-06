@@ -34,7 +34,9 @@ namespace SimpleAggregator {
                     DestinationPath = @"D:\Data\LANL\",
                     TimeFrame = Convert.ToInt32(this.textBox4.Text),
                     FrameCount = Convert.ToInt32(this.textBox5.Text),
-                    ResultFileName = this.textBox6.Text
+                    ResultFileName = this.textBox6.Text,
+                    BasisCount = Convert.ToInt32(this.textBox2.Text),
+                    Basis = this.textBox3.Text.Split(',')
                 });
             }
         }
@@ -48,13 +50,13 @@ namespace SimpleAggregator {
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
             var options = (CalculatorOptions)e.Argument;
             BackgroundWorker bw = sender as BackgroundWorker;
-            var calc = new Aggregator();
+            var calc = new Aggregator(options);
             bw.ReportProgress(0, "Reading and calculating...");
             var readers = new List<ReaderBase> {
-                //new ProcReader(options, calc),
+                new ProcReader(options, calc),
                 //new DnsReader(options, calc),
                 //new FlowsReader(options, calc)
-                new AuthReader(options, calc),
+                //new AuthReader(options, calc),
             };
             for(int i = 0; i < options.FrameCount; i++) {
                 calc.Begin();
@@ -93,6 +95,10 @@ namespace SimpleAggregator {
             }
         }
         private void Form1_Load(object sender, EventArgs e) {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e) {
 
         }
     }

@@ -13,5 +13,7 @@ namespace SimpleAggregator {
         public int TimeFrame { get; set; }
         public int FrameCount { get; set; }
         public string DestinationPath { get; internal set; }
+        public int BasisCount { get; set; }
+        public string[] Basis { get; set; }
     }
 }

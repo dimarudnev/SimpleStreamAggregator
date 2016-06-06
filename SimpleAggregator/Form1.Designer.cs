@@ -43,6 +43,10 @@
             this.label9 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -77,7 +81,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(15, 124);
+            this.button2.Location = new System.Drawing.Point(12, 185);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(199, 23);
             this.button2.TabIndex = 7;
@@ -87,7 +91,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(15, 153);
+            this.progressBar1.Location = new System.Drawing.Point(12, 214);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(280, 23);
             this.progressBar1.TabIndex = 8;
@@ -95,7 +99,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 184);
+            this.label4.Location = new System.Drawing.Point(12, 245);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(0, 13);
             this.label4.TabIndex = 9;
@@ -110,7 +114,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(220, 124);
+            this.button3.Location = new System.Drawing.Point(217, 185);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 10;
@@ -159,7 +163,7 @@
             this.textBox5.Size = new System.Drawing.Size(123, 20);
             this.textBox5.TabIndex = 22;
             this.textBox5.Text = "10";
-            //
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -169,11 +173,50 @@
             this.label6.TabIndex = 21;
             this.label6.Text = "Frames count:";
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(89, 124);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(123, 20);
+            this.textBox2.TabIndex = 24;
+            this.textBox2.Text = "2";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 127);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 13);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "Basis count:";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(88, 150);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(123, 20);
+            this.textBox3.TabIndex = 26;
+            this.textBox3.Text = "C1,C181";
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(11, 153);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 25;
+            this.label3.Text = "Basis:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(314, 210);
+            this.ClientSize = new System.Drawing.Size(314, 266);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textBox6);
@@ -212,6 +255,10 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label3;
     }
 }
 
