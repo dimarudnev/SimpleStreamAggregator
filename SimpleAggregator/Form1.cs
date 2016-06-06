@@ -23,7 +23,7 @@ namespace SimpleAggregator {
             DialogResult dr = this.openFileDialog1.ShowDialog();
 
             if(dr == DialogResult.OK) {
-                textBox1.Text = this.openFileDialog1.FileName;
+                //textBox1.Text = this.openFileDialog1.FileName;
             }
         }
 
