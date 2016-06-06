@@ -11,9 +11,16 @@ namespace SimpleAggregator {
     class Aggregator {
         private CalculatorOptions options;
         List<EventsInfo> basis = null;
+        List<string> basisKeys = new List<string>();
         List<Aggregation> aggregations = new List<Aggregation>();
 
         ConcurrentDictionary<string, EventsInfo> current = new ConcurrentDictionary<string, EventsInfo>();
+
+        public List<string> Basis {
+            get {
+                return basisKeys;
+            }
+        }
 
         public Aggregator(CalculatorOptions option) {
             this.options = option;
@@ -26,10 +33,16 @@ namespace SimpleAggregator {
             basis = new List<EventsInfo>();
             for(int i = 0; i < options.BasisCount; i++) {
                 EventsInfo basisElement = null;
-                if(options.Basis.Length > i && current.TryGetValue(options.Basis[i], out basisElement)) {
-
-                } else {
+                if(options.Basis.Length > i) {
+                    var basisKey = options.Basis[i];
+                    if(current.ContainsKey(basisKey)) {
+                        basisElement = current[basisKey];
+                        basisKeys.Add(basisKey);
+                    }
+                } 
+                if(basisElement == null) {
                     basisElement = current.Values.ElementAt(i);
+                    basisKeys.Add(current.Keys.ElementAt(i));
                 }
                 basis.Add(basisElement);
             }

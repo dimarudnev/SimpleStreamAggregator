@@ -36,7 +36,8 @@ namespace SimpleAggregator {
                     FrameCount = Convert.ToInt32(this.textBox5.Text),
                     ResultFileName = this.textBox6.Text,
                     BasisCount = Convert.ToInt32(this.textBox2.Text),
-                    Basis = this.textBox3.Text.Split(',')
+                    Basis = this.textBox3.Text.Split(','),
+                    Comment = this.textBox7.Text
                 });
             }
         }
@@ -53,9 +54,9 @@ namespace SimpleAggregator {
             var calc = new Aggregator(options);
             bw.ReportProgress(0, "Reading and calculating...");
             var readers = new List<ReaderBase> {
-                new ProcReader(options, calc),
+                //new ProcReader(options, calc),
                 //new DnsReader(options, calc),
-                //new FlowsReader(options, calc)
+                new FlowsReader(options, calc)
                 //new AuthReader(options, calc),
             };
             for(int i = 0; i < options.FrameCount; i++) {
@@ -77,6 +78,8 @@ namespace SimpleAggregator {
                     calc.WriteResult(streamWriter);
                 }
             }
+
+            options.WriteExpirementInfo(readers.Select(reader => reader.GetType().Name), calc.Basis);
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -99,6 +102,14 @@ namespace SimpleAggregator {
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void textBox7_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e) {
 
         }
     }

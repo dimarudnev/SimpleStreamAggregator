@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Aggregator.cs" />
-    <Compile Include="Data\CalculatorBase.cs" />
+    <Compile Include="Data\CalculatorOptions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
