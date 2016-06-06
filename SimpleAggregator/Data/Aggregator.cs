@@ -9,24 +9,34 @@ using System.Threading.Tasks;
 
 namespace SimpleAggregator {
     class Aggregator {
+        private CalculatorOptions options;
         List<EventsInfo> basis = null;
         List<Aggregation> aggregations = new List<Aggregation>();
 
         ConcurrentDictionary<string, EventsInfo> current = new ConcurrentDictionary<string, EventsInfo>();
 
-        public Aggregator() {
-
+        public Aggregator(CalculatorOptions option) {
+            this.options = option;
         }
 
         public void Begin() {
             current.Clear();
         }
+        void GenerateBasis() {
+            basis = new List<EventsInfo>();
+            for(int i = 0; i < options.BasisCount; i++) {
+                EventsInfo basisElement = null;
+                if(options.Basis.Length > i && current.TryGetValue(options.Basis[i], out basisElement)) {
+
+                } else {
+                    basisElement = current.Values.ElementAt(i);
+                }
+                basis.Add(basisElement);
+            }
+        }
         public void End(int timeIndex) {
             if(basis == null) {
-                basis = new List<EventsInfo>() {
-                    current.Keys.Contains("C1") ? current["C1"] : current.Values.ElementAt(0),
-                    current.Keys.Contains("C181") ? current["C181"] : current.Values.ElementAt(100),
-                };
+                GenerateBasis();
             }
             int[,] matrix = new int[current.Keys.Count, basis.Count];
             int i = 0, j = 0;
@@ -53,7 +63,6 @@ namespace SimpleAggregator {
 
         }
 
-        static object locker = new { };
         public void AddValue(string rowName, string[] colNames) {
             foreach(var colName in colNames) {
                 current.GetOrAdd(rowName, (key) => new EventsInfo()).Increment(colName);
