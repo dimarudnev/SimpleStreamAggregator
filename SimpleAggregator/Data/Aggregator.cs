@@ -63,21 +63,24 @@ namespace SimpleAggregator {
                 i++;
                 j = 0;
             }
+            var startTime = options.StartTime + options.TimeFrame * timeIndex;
             aggregations.Add(new Aggregation() {
                 Index = timeIndex,
                 Matrix = matrix,
-                RowNames = current.Keys.ToArray()
+                RowNames = current.Keys.ToArray(),
+                StartTime = startTime,
+                EndTime = startTime + options.TimeFrame -1,
             });
             current.Clear();
         }
-        public void WriteResult(StreamWriter writer) {
-            writer.Write("T,C");
+        public void WriteResult(StreamWriter writer, RedTeam redTeam) {
+            writer.Write("Time,Comp,Anomaly");
             for(int i = 0; i < Basis.Count; i++) {
                 writer.Write(",V{0}", i);
             }
             writer.WriteLine();
             foreach(Aggregation info in aggregations) {
-                info.WriteToFile(writer);
+                info.WriteToFile(writer, redTeam);
             }
 
         }
@@ -89,16 +92,21 @@ namespace SimpleAggregator {
         }
     }
     class Aggregation {
+        public int StartTime { get; set; }
+        public int EndTime { get; set; }
+
         public int Index { get; set; }
         public string[] RowNames { get; set; }
         public int[,] Matrix { get; set; }
 
-        public void WriteToFile(StreamWriter writer) {
+        public void WriteToFile(StreamWriter writer, RedTeam redTeam) {
             var dim1 = Matrix.GetUpperBound(0) + 1;
             var dim2 = Matrix.GetUpperBound(1) + 1;
             for(int i = 0; i < dim1; i++) {
+                var row = RowNames[i];
                 writer.Write(string.Format("{0},", Index));
-                writer.Write(string.Format("{0},", RowNames[i]));
+                writer.Write(string.Format("{0},", row));
+                writer.Write(string.Format("{0},", redTeam.HasAnomaly(EndTime, row)? "1" : "0"));
                 for(int j = 0; j < dim2; j++) {
                     if(j != 0)
                         writer.Write(",");

@@ -17,7 +17,7 @@ namespace SimpleAggregator {
         public ReaderBase(CalculatorOptions options, Aggregator aggregator) {
             this.options = options;
             this.aggregator = aggregator;
-            fileStream = new FileStream(Path.Combine(options.SourcePath, FileName), FileMode.Open);
+            fileStream = new FileStream(Path.Combine(options.SourcePath, FileName), FileMode.Open, FileAccess.Read, FileShare.Read);
             streamReader = new StreamReader(fileStream);
 
         }

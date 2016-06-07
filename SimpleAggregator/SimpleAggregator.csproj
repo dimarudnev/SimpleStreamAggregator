@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Data\Aggregator.cs" />
     <Compile Include="Data\CalculatorOptions.cs" />
+    <Compile Include="Data\RedTeam.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

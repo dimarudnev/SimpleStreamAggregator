@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 
+
 namespace SimpleAggregator {
     public partial class Form1 : Form {
         public Form1() {
@@ -87,9 +88,10 @@ namespace SimpleAggregator {
 
             bw.ReportProgress(0, "Writing result...");
             var resultFile = options.DestinationPath + options.ResultFileName + ".csv";
+            RedTeam redteam = new RedTeam(options); 
             using(var fileStream = new FileStream(resultFile, FileMode.Create)) {
                 using(var streamWriter = new StreamWriter(fileStream)) {
-                    calc.WriteResult(streamWriter);
+                    calc.WriteResult(streamWriter, redteam);
                 }
             }
 
