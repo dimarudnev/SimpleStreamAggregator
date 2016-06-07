@@ -53,9 +53,12 @@ namespace SimpleAggregator {
             }
             int[,] matrix = new int[current.Keys.Count, basis.Count];
             int i = 0, j = 0;
-            foreach(KeyValuePair<string, EventsInfo> item in current) {
+            foreach(EventsInfo item in current.Values) {
+                item.Normalize();
+            }
+            foreach(EventsInfo item in current.Values) {
                 foreach(EventsInfo basisItem in basis) {
-                    matrix[i, j++] = EventsInfo.CalcDictance(item.Value, basisItem);
+                    matrix[i, j++] = EventsInfo.CalcDictance(item, basisItem);
                 }
                 i++;
                 j = 0;
@@ -68,9 +71,12 @@ namespace SimpleAggregator {
             current.Clear();
         }
         public void WriteResult(StreamWriter writer) {
-            writer.WriteLine("T,C,V1,V2");
+            writer.Write("T,C");
+            for(int i = 0; i < Basis.Count; i++) {
+                writer.Write(",V{0}", i);
+            }
+            writer.WriteLine();
             foreach(Aggregation info in aggregations) {
-                //writer.WriteLine("========= Time: {0} ({1} - {2})==========", info.Key, info.Value.StartTime, info.Value.EndTime);
                 info.WriteToFile(writer);
             }
 
@@ -109,6 +115,14 @@ namespace SimpleAggregator {
                 return oldValue + 1;
             });
         }
+
+        public void Normalize() {
+            int sum = Values.Sum();
+            foreach(var key in Keys.ToList()) { 
+                this[key] = (int)(((double)this[key]*100) / sum);
+            }
+        }
+
         public static int CalcDictance(EventsInfo value1, EventsInfo value2) {
             const double pow = 2;
             double distance = 0;

@@ -87,7 +87,7 @@ namespace SimpleAggregator {
 
         public FlowsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
         protected override string[] GetColumnValues(string[] lineParts) {
-            return new string[1] { "flows" + lineParts[4] + lineParts[5] };
+            return new string[1] { lineParts[5] };
         }
         protected override string GetRowValue(string[] lineParts) {
             return lineParts[2];
