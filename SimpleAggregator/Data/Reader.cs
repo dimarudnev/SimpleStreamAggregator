@@ -33,11 +33,14 @@ namespace SimpleAggregator {
                 string line = streamReader.ReadLine();
                 string[] lineParts = line.Split(',');
                 var timeStamp = GetTimeStamp(lineParts);
-                int currentTimeIndex = (int)(timeStamp / this.options.TimeFrame);
-                if(timeIndex == currentTimeIndex) {
-                    aggregator.AddValue(GetRowValue(lineParts), GetColumnValues(lineParts));
-                } else {
-                    break;
+                if(timeStamp >= options.StartTime) {
+                    timeStamp -= options.StartTime;
+                    int currentTimeIndex = (int)(timeStamp / this.options.TimeFrame);
+                    if(timeIndex == currentTimeIndex) {
+                        aggregator.AddValue(GetRowValue(lineParts), GetColumnValues(lineParts));
+                    } else {
+                        break;
+                    }
                 }
             }
         }

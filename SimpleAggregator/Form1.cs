@@ -29,18 +29,32 @@ namespace SimpleAggregator {
 
         private void button2_Click(object sender, EventArgs e) {
             if(!backgroundWorker1.IsBusy) {
-                backgroundWorker1.RunWorkerAsync(new CalculatorOptions {
-                    SourcePath = @"D:\Data\LANL\source",
-                    DestinationPath = @"D:\Data\LANL\",
-                    TimeFrame = Convert.ToInt32(this.textBox4.Text),
-                    FrameCount = Convert.ToInt32(this.textBox5.Text),
-                    ResultFileName = this.textBox6.Text,
-                    BasisCount = Convert.ToInt32(this.textBox2.Text),
-                    Basis = this.textBox3.Text.Split(','),
-                    Comment = this.textBox7.Text
-                });
+                backgroundWorker1.RunWorkerAsync(CreateOptions());
             }
         }
+
+        private CalculatorOptions CreateOptions() {
+            return new CalculatorOptions {
+                SourcePath = @"D:\Data\LANL\source",
+                DestinationPath = @"D:\Data\LANL\",
+                StartTime = ToInt32Safe(this.textBox1.Text),
+                TimeFrame = ToInt32Safe(this.textBox4.Text),
+                FrameCount = ToInt32Safe(this.textBox5.Text),
+                ResultFileName = this.textBox6.Text,
+                BasisCount = ToInt32Safe(this.textBox2.Text),
+                Basis = this.textBox3.Text.Split(','),
+                Comment = this.textBox7.Text
+
+            };
+        }
+        int ToInt32Safe(string str) {
+            try {
+                return Convert.ToInt32(str);
+            } catch {
+                return 0;
+            }
+        }
+
         private void button3_Click(object sender, EventArgs e) {
             if(backgroundWorker1.IsBusy) {
                 label4.Text = "Cancelling...";
@@ -111,6 +125,22 @@ namespace SimpleAggregator {
 
         private void label7_Click(object sender, EventArgs e) {
 
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e) {
+            RecalculateTimeWindow();
+        }
+        private void RecalculateTimeWindow() {
+            var options = CreateOptions();
+            label8.Text = string.Format("{0}-{1}", options.StartTime, options.EndTime);
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e) {
+            RecalculateTimeWindow();
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e) {
+            RecalculateTimeWindow();
         }
     }
 }
