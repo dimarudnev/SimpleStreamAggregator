@@ -61,7 +61,7 @@ namespace SimpleAggregator {
         }
 
         protected override string[] GetColumnValues(string[] lineParts) {
-            return new string[1] { lineParts[3] };
+            return new string[1] { "Proc=" + lineParts[3] };
         }
 
         protected override string GetRowValue(string[] lineParts) {
@@ -90,7 +90,10 @@ namespace SimpleAggregator {
 
         public FlowsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
         protected override string[] GetColumnValues(string[] lineParts) {
-            return new string[1] { lineParts[5] };
+            return new string[] {
+                "Flows=" + lineParts[4],
+                "Port=" + lineParts[5]
+            };
         }
         protected override string GetRowValue(string[] lineParts) {
             return lineParts[2];
@@ -109,7 +112,13 @@ namespace SimpleAggregator {
             //} else {
             //    return new string[0];
             //}
-            return new [] { lineParts[4], lineParts[5], lineParts[7], lineParts[8] };
+            //return new [] { lineParts[4], lineParts[5], lineParts[7], lineParts[8] };
+
+            return new[] {
+                "Dest=" + (lineParts[3] == lineParts[4] ? "Self" : lineParts[4]),
+                "Type=" + lineParts[5],
+                "Result=" + lineParts[8]
+            };
         }
         protected override string GetRowValue(string[] lineParts) {
             return lineParts[3];

@@ -71,10 +71,10 @@ namespace SimpleAggregator {
             bw.ReportProgress(0, "Reading and calculating...");
             var calc = new Aggregator(options, redteam);
             var readers = new List<ReaderBase> {
-                //new ProcReader(options, calc),
+                new ProcReader(options, calc),
                 //new DnsReader(options, calc),
-                //new FlowsReader(options, calc)
-                new AuthReader(options, calc),
+                new FlowsReader(options, calc),
+                new AuthReader(options, calc)
             };
             for(int i = 0; i < options.FrameCount; i++) {
                 calc.Begin();
