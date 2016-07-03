@@ -66,13 +66,15 @@ namespace SimpleAggregator {
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
             var options = (CalculatorOptions)e.Argument;
             BackgroundWorker bw = sender as BackgroundWorker;
-            var calc = new Aggregator(options);
+            bw.ReportProgress(0, "Prepare RedTeam info...");
+            RedTeam redteam = new RedTeam(options);
             bw.ReportProgress(0, "Reading and calculating...");
+            var calc = new Aggregator(options, redteam);
             var readers = new List<ReaderBase> {
                 //new ProcReader(options, calc),
                 //new DnsReader(options, calc),
-                new FlowsReader(options, calc)
-                //new AuthReader(options, calc),
+                //new FlowsReader(options, calc)
+                new AuthReader(options, calc),
             };
             for(int i = 0; i < options.FrameCount; i++) {
                 calc.Begin();
@@ -88,10 +90,9 @@ namespace SimpleAggregator {
 
             bw.ReportProgress(0, "Writing result...");
             var resultFile = options.DestinationPath + options.ResultFileName + ".csv";
-            RedTeam redteam = new RedTeam(options); 
             using(var fileStream = new FileStream(resultFile, FileMode.Create)) {
                 using(var streamWriter = new StreamWriter(fileStream)) {
-                    calc.WriteResult(streamWriter, redteam);
+                    calc.WriteResult(streamWriter);
                 }
             }
 
@@ -109,6 +110,7 @@ namespace SimpleAggregator {
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e) {
             this.progressBar1.Value = e.ProgressPercentage;
+            this.label10.Text = e.ProgressPercentage + "%";
             if(e.UserState != null) {
                 this.label4.Text = e.UserState.ToString();
             }
@@ -143,6 +145,10 @@ namespace SimpleAggregator {
 
         private void textBox5_TextChanged(object sender, EventArgs e) {
             RecalculateTimeWindow();
+        }
+
+        private void label10_Click(object sender, EventArgs e) {
+
         }
     }
 }

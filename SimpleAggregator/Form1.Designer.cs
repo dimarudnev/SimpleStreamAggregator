@@ -49,6 +49,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -113,7 +114,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(123, 20);
             this.textBox4.TabIndex = 13;
-            this.textBox4.Text = "10";
+            this.textBox4.Text = "200";
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox6
@@ -139,7 +140,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(123, 20);
             this.textBox5.TabIndex = 22;
-            this.textBox5.Text = "10";
+            this.textBox5.Text = "1000";
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // label6
@@ -210,7 +211,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(123, 20);
             this.textBox1.TabIndex = 30;
-            this.textBox1.Text = "0";
+            this.textBox1.Text = "650000";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
@@ -231,11 +232,22 @@
             this.label8.TabIndex = 31;
             this.label8.Text = "label8";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(307, 228);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(41, 13);
+            this.label10.TabIndex = 32;
+            this.label10.Text = "label10";
+            this.label10.Click += new System.EventHandler(this.label10_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(472, 309);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
@@ -285,6 +297,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label10;
     }
 }
 

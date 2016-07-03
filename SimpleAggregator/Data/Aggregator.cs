@@ -15,6 +15,7 @@ namespace SimpleAggregator {
         List<Aggregation> aggregations = new List<Aggregation>();
 
         ConcurrentDictionary<string, EventsInfo> current = new ConcurrentDictionary<string, EventsInfo>();
+        RedTeam redTeam;
 
         public List<string> Basis {
             get {
@@ -22,8 +23,9 @@ namespace SimpleAggregator {
             }
         }
 
-        public Aggregator(CalculatorOptions option) {
+        public Aggregator(CalculatorOptions option, RedTeam redTeam) {
             this.options = option;
+            this.redTeam = redTeam;
         }
 
         public void Begin() {
@@ -53,9 +55,9 @@ namespace SimpleAggregator {
             }
             int[,] matrix = new int[current.Keys.Count, basis.Count];
             int i = 0, j = 0;
-            foreach(EventsInfo item in current.Values) {
-                item.Normalize();
-            }
+            //foreach(EventsInfo item in current.Values) {
+            //    item.Normalize();
+            //}
             foreach(EventsInfo item in current.Values) {
                 foreach(EventsInfo basisItem in basis) {
                     matrix[i, j++] = EventsInfo.CalcDictance(item, basisItem);
@@ -73,7 +75,7 @@ namespace SimpleAggregator {
             });
             current.Clear();
         }
-        public void WriteResult(StreamWriter writer, RedTeam redTeam) {
+        public void WriteResult(StreamWriter writer) {
             writer.Write("Time,Comp,Anomaly");
             for(int i = 0; i < Basis.Count; i++) {
                 writer.Write(",V{0}", i);
@@ -86,8 +88,10 @@ namespace SimpleAggregator {
         }
 
         public void AddValue(string rowName, string[] colNames) {
-            foreach(var colName in colNames) {
-                current.GetOrAdd(rowName, (key) => new EventsInfo()).Increment(colName);
+            if(redTeam.IsUnderAttack(rowName)) {
+                foreach(var colName in colNames) {
+                    current.GetOrAdd(rowName, (key) => new EventsInfo()).Increment(colName);
+                }
             }
         }
     }
@@ -106,7 +110,7 @@ namespace SimpleAggregator {
                 var row = RowNames[i];
                 writer.Write(string.Format("{0},", Index));
                 writer.Write(string.Format("{0},", row));
-                writer.Write(string.Format("{0},", redTeam.HasAnomaly(EndTime, row)? "1" : "0"));
+                writer.Write(string.Format("{0},", redTeam.AnomalyIndex(EndTime, row)));
                 for(int j = 0; j < dim2; j++) {
                     if(j != 0)
                         writer.Write(",");
@@ -146,7 +150,7 @@ namespace SimpleAggregator {
             foreach(string key in uniqueKeysForValue2) {
                 distance += Math.Pow(Math.Abs(value2[key]), pow);
             }
-            return (int)Math.Pow(distance, 1D/ pow);
+            return (int)Math.Pow(distance, 1D / pow);
         }
     }
 }

@@ -6,29 +6,44 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleAggregator {
+    class AttackInfo {
+        public int Time { get; set; }
+        public string Target { get; set; }
+        public int Index { get; set; }
+    }
     class RedTeam {
-        Dictionary<string, int> activity = new Dictionary<string, int>();
+        List<AttackInfo> activity = new List<AttackInfo>();
 
         public RedTeam(CalculatorOptions options) {
             using(var fileStream = new FileStream( Path.Combine(options.SourcePath, "redteam.txt"), FileMode.Open)) {
                 using(var streamReader = new StreamReader(fileStream)) {
-                    string line = streamReader.ReadLine();
-                    string[] lineParts = line.Split(',');
-                    var time = Convert.ToInt32(lineParts[0]);
-                    var target = lineParts[3];
-                    if(!activity.ContainsKey(target)) {
-                        activity.Add(target, time);
+                    while(!streamReader.EndOfStream) {
+                        string line = streamReader.ReadLine();
+                        string[] lineParts = line.Split(',');
+                        var time = Convert.ToInt32(lineParts[0]);
+                        var target = lineParts[3];
+                        if(time > options.StartTime) {
+                            IEnumerable<AttackInfo> attacksOnTarget = activity.Where(info => info.Target == target);
+                            if(attacksOnTarget.FirstOrDefault(info => info.Time == time) == null) {
+                                activity.Add(new AttackInfo {
+                                    Time = time,
+                                    Index = attacksOnTarget.Count(),
+                                    Target = target
+                                });
+                            }
+                        }
                     }
                 }
             }
         }
 
-        public bool HasAnomaly(int timeStamp, string comp) {
-            int anomalyTime = -1;
-            if(activity.TryGetValue(comp, out anomalyTime)) {
-                return timeStamp >= anomalyTime;
-            }
-            return false;
+        public int AnomalyIndex(int timeStamp, string comp) {
+
+            AttackInfo anomaly = this.activity.LastOrDefault(info => info.Time <= timeStamp && info.Target == comp);
+            return anomaly == null ? -1: anomaly.Index;
+        }
+        public bool IsUnderAttack(string comp) {
+            return this.activity.FirstOrDefault(info => info.Target == comp) != null;
         }
     }
 }

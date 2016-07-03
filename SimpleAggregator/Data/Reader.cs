@@ -102,7 +102,14 @@ namespace SimpleAggregator {
 
         public AuthReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
         protected override string[] GetColumnValues(string[] lineParts) {
-            return new string[1] { lineParts[8] };
+            //if(lineParts[3] != lineParts[4]) {
+            //    return new string[] {
+            //        lineParts[4]
+            //    };
+            //} else {
+            //    return new string[0];
+            //}
+            return new [] { lineParts[4], lineParts[5], lineParts[7], lineParts[8] };
         }
         protected override string GetRowValue(string[] lineParts) {
             return lineParts[3];
