@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleAggregator {
-    abstract class ReaderBase {
+    abstract class LanlReaderBase: ReaderBase {
         Aggregator aggregator;
         FileStream fileStream;
         StreamReader streamReader;
@@ -14,10 +14,10 @@ namespace SimpleAggregator {
 
         protected abstract string FileName { get; }
 
-        public ReaderBase(CalculatorOptions options, Aggregator aggregator) {
+        public LanlReaderBase(string path, CalculatorOptions options, Aggregator aggregator) {
             this.options = options;
             this.aggregator = aggregator;
-            fileStream = new FileStream(Path.Combine(options.SourcePath, FileName), FileMode.Open, FileAccess.Read, FileShare.Read);
+            fileStream = new FileStream(Path.Combine(path, FileName), FileMode.Open, FileAccess.Read, FileShare.Read);
             streamReader = new StreamReader(fileStream);
 
         }
@@ -28,7 +28,7 @@ namespace SimpleAggregator {
         protected abstract string GetRowValue(string[] lineParts);
         protected abstract string[] GetColumnValues(string[] lineParts);
 
-        public void ReadNextTimeStamp(int timeIndex) {
+        public override void ReadNextTimeStamp(int timeIndex) {
             while(!streamReader.EndOfStream) {
                 string line = streamReader.ReadLine();
                 string[] lineParts = line.Split(',');
@@ -45,18 +45,18 @@ namespace SimpleAggregator {
             }
         }
 
-        internal void Dispose() {
+        public override void Dispose() {
             streamReader.Close();
             streamReader.Dispose();
             fileStream.Close();
             fileStream.Dispose();
         }
     }
-    class ProcReader : ReaderBase {
+    class ProcReader : LanlReaderBase {
         //1,C553$@DOM1,C553,P16,Start
         protected override string FileName { get { return "proc.txt"; } }
 
-        public ProcReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
+        public ProcReader(string path, CalculatorOptions options, Aggregator aggregator) : base(path, options, aggregator) {
 
         }
 
@@ -68,11 +68,11 @@ namespace SimpleAggregator {
             return lineParts[2];
         }
     }
-    class DnsReader : ReaderBase {
+    class DnsReader : LanlReaderBase {
         //31,C161,C2109
         protected override string FileName { get { return "dns.txt"; } }
 
-        public DnsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) {
+        public DnsReader(string path, CalculatorOptions options, Aggregator aggregator) : base(path, options, aggregator) {
 
         }
 
@@ -84,11 +84,11 @@ namespace SimpleAggregator {
             return lineParts[1];
         }
     }
-    class FlowsReader : ReaderBase {
+    class FlowsReader : LanlReaderBase {
         //1,9,C3090,N10471,C3420,N46,6,3,144
         protected override string FileName { get { return "flows.txt"; } }
 
-        public FlowsReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
+        public FlowsReader(string path, CalculatorOptions options, Aggregator aggregator) : base(path, options, aggregator) { }
         protected override string[] GetColumnValues(string[] lineParts) {
             return new string[] {
                 "Flows=" + lineParts[4],
@@ -99,11 +99,11 @@ namespace SimpleAggregator {
             return lineParts[2];
         }
     }
-    class AuthReader : ReaderBase {
+    class AuthReader : LanlReaderBase {
         //1,C625$@DOM1,U147@DOM1,C625,C625,Negotiate,Batch,LogOn,Success
         protected override string FileName { get { return "auth.txt"; } }
 
-        public AuthReader(CalculatorOptions options, Aggregator aggregator) : base(options, aggregator) { }
+        public AuthReader(string path, CalculatorOptions options, Aggregator aggregator) : base(path, options, aggregator) { }
         protected override string[] GetColumnValues(string[] lineParts) {
             //if(lineParts[3] != lineParts[4]) {
             //    return new string[] {

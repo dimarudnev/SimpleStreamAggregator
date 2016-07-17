@@ -11,11 +11,11 @@ namespace SimpleAggregator {
         public string Target { get; set; }
         public int Index { get; set; }
     }
-    class RedTeam {
+    class RedTeam: IRedTeam {
         List<AttackInfo> activity = new List<AttackInfo>();
 
-        public RedTeam(CalculatorOptions options) {
-            using(var fileStream = new FileStream( Path.Combine(options.SourcePath, "redteam.txt"), FileMode.Open)) {
+        public RedTeam(string path, CalculatorOptions options) {
+            using(var fileStream = new FileStream(Path.Combine(path, "redteam.txt"), FileMode.Open)) {
                 using(var streamReader = new StreamReader(fileStream)) {
                     while(!streamReader.EndOfStream) {
                         string line = streamReader.ReadLine();
@@ -38,7 +38,6 @@ namespace SimpleAggregator {
         }
 
         public int AnomalyIndex(int timeStamp, string comp) {
-
             AttackInfo anomaly = this.activity.LastOrDefault(info => info.Time <= timeStamp && info.Target == comp);
             return anomaly == null ? -1: anomaly.Index;
         }

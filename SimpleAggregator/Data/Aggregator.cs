@@ -15,7 +15,7 @@ namespace SimpleAggregator {
         List<Aggregation> aggregations = new List<Aggregation>();
 
         ConcurrentDictionary<string, EventsInfo> current = new ConcurrentDictionary<string, EventsInfo>();
-        RedTeam redTeam;
+        IRedTeam redTeam;
 
         public List<string> Basis {
             get {
@@ -23,7 +23,7 @@ namespace SimpleAggregator {
             }
         }
 
-        public Aggregator(CalculatorOptions option, RedTeam redTeam) {
+        public Aggregator(CalculatorOptions option, IRedTeam redTeam) {
             this.options = option;
             this.redTeam = redTeam;
         }
@@ -104,7 +104,7 @@ namespace SimpleAggregator {
         public string[] RowNames { get; set; }
         public int[,] Matrix { get; set; }
 
-        public void WriteToFile(StreamWriter writer, RedTeam redTeam) {
+        public void WriteToFile(StreamWriter writer, IRedTeam redTeam) {
             var dim1 = Matrix.GetUpperBound(0) + 1;
             var dim2 = Matrix.GetUpperBound(1) + 1;
             for(int i = 0; i < dim1; i++) {

@@ -36,8 +36,6 @@ namespace SimpleAggregator {
 
         private CalculatorOptions CreateOptions() {
             return new CalculatorOptions {
-                SourcePath = @"D:\Data\LANL\source",
-                DestinationPath = @"D:\Data\LANL\",
                 StartTime = ToInt32Safe(this.textBox1.Text),
                 TimeFrame = ToInt32Safe(this.textBox4.Text),
                 FrameCount = ToInt32Safe(this.textBox5.Text),
@@ -66,37 +64,54 @@ namespace SimpleAggregator {
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
             var options = (CalculatorOptions)e.Argument;
             BackgroundWorker bw = sender as BackgroundWorker;
+            IModuleBase module = new LanlModule();
             bw.ReportProgress(0, "Prepare RedTeam info...");
-            RedTeam redteam = new RedTeam(options);
+            IRedTeam redteam = module.CreateRedTeam(options);
             bw.ReportProgress(0, "Reading and calculating...");
-            var calc = new Aggregator(options, redteam);
-            var readers = new List<ReaderBase> {
-                new ProcReader(options, calc),
-                //new DnsReader(options, calc),
-                new FlowsReader(options, calc),
-                new AuthReader(options, calc)
-            };
+            var aggregator = new Aggregator(options, redteam);
+
+            var readers = module.CreateReaders(options, aggregator);
             for(int i = 0; i < options.FrameCount; i++) {
-                calc.Begin();
+                aggregator.Begin();
                 List<Task> tasks = new List<Task>();
                 foreach(ReaderBase reader in readers) {
                     tasks.Add(Task.Factory.StartNew(() => reader.ReadNextTimeStamp(i)));
                 }
                 Task.WaitAll(tasks.ToArray());
                 bw.ReportProgress((int)(((i + 1) * 100) / options.FrameCount));
-                calc.End(i);
+                aggregator.End(i);
             }
             readers.ForEach(reader => reader.Dispose());
 
             bw.ReportProgress(0, "Writing result...");
-            var resultFile = options.DestinationPath + options.ResultFileName + ".csv";
+
+
+            var resultFile = Path.Combine(module.DestinationPath, options.ResultFileName + ".csv");
             using(var fileStream = new FileStream(resultFile, FileMode.Create)) {
                 using(var streamWriter = new StreamWriter(fileStream)) {
-                    calc.WriteResult(streamWriter);
+                    aggregator.WriteResult(streamWriter);
                 }
             }
 
-            options.WriteExpirementInfo(readers.Select(reader => reader.GetType().Name), calc.Basis);
+            WriteExpirementInfo(module.DestinationPath, options, readers.Select(reader => reader.GetType().Name), aggregator.Basis);
+        }
+
+        private void WriteExpirementInfo(string destinationPath, CalculatorOptions options, IEnumerable<string> sourceReaders, List<string> basis) {
+            var infoFilePath = Path.Combine(destinationPath, options.ResultFileName + ".info.txt");
+            using(FileStream fs = new FileStream(infoFilePath, FileMode.Create)) {
+                using(StreamWriter sw = new StreamWriter(fs)) {
+                    sw.WriteLine("Source Files: {0}", String.Join(",", sourceReaders));
+
+                    sw.WriteLine("Start time: {0}", options.StartTime);
+                    sw.WriteLine("End time: {0}", options.EndTime);
+                    sw.WriteLine("Time frame lenght: {0}", options.TimeFrame);
+                    sw.WriteLine("Time frame count: {0}", options.FrameCount);
+                    sw.WriteLine("Basis count: {0}", options.BasisCount);
+                    sw.WriteLine("Basis: {0}", String.Join(",", basis));
+
+                    sw.WriteLine("Comment: {0}", options.Comment);
+                }
+            }
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
