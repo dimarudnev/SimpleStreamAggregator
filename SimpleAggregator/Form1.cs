@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections.Concurrent;
-
+using SimpleAggregator.ISCX;
 
 namespace SimpleAggregator {
     public partial class Form1 : Form {
@@ -64,7 +64,7 @@ namespace SimpleAggregator {
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
             var options = (CalculatorOptions)e.Argument;
             BackgroundWorker bw = sender as BackgroundWorker;
-            IModuleBase module = new LanlModule();
+            IModuleBase module = new IscxModule();
             bw.ReportProgress(0, "Prepare RedTeam info...");
             IRedTeam redteam = module.CreateRedTeam(options);
             bw.ReportProgress(0, "Reading and calculating...");

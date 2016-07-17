@@ -11,10 +11,10 @@ namespace SimpleAggregator {
         public string Target { get; set; }
         public int Index { get; set; }
     }
-    class RedTeam: IRedTeam {
+    class LanlRedTeam: IRedTeam {
         List<AttackInfo> activity = new List<AttackInfo>();
 
-        public RedTeam(string path, CalculatorOptions options) {
+        public LanlRedTeam(string path, CalculatorOptions options) {
             using(var fileStream = new FileStream(Path.Combine(path, "redteam.txt"), FileMode.Open)) {
                 using(var streamReader = new StreamReader(fileStream)) {
                     while(!streamReader.EndOfStream) {

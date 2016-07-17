@@ -89,7 +89,7 @@ namespace SimpleAggregator {
         }
 
         public void AddValue(string rowName, string[] colNames) {
-            if(redTeam.IsUnderAttack(rowName)) {
+            if(!string.IsNullOrEmpty(rowName) && redTeam.IsUnderAttack(rowName)) {
                 foreach(var colName in colNames) {
                     current.GetOrAdd(rowName, (key) => new EventsInfo()).Increment(colName);
                 }
@@ -126,6 +126,7 @@ namespace SimpleAggregator {
         
         public ConcurrentDictionary<string, ConcurrentDictionary<string, double>> Dict { get { return dict; } }
         public void Increment(string valueString) {
+            
             var group = valueString.Split('=')[0];
             var key = valueString.Split('=')[1];
 

@@ -24,7 +24,7 @@ namespace SimpleAggregator {
         }
 
         public IRedTeam CreateRedTeam(CalculatorOptions options) {
-            return new RedTeam(SourcePath, options);
+            return new LanlRedTeam(SourcePath, options);
         }
     }
 }

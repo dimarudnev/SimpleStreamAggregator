@@ -7,44 +7,32 @@ using System.Threading.Tasks;
 
 namespace SimpleAggregator {
     abstract class LanlReaderBase: ReaderBase {
-        Aggregator aggregator;
         FileStream fileStream;
         StreamReader streamReader;
-        CalculatorOptions options;
 
         protected abstract string FileName { get; }
 
-        public LanlReaderBase(string path, CalculatorOptions options, Aggregator aggregator) {
-            this.options = options;
-            this.aggregator = aggregator;
+        public LanlReaderBase(string path, CalculatorOptions options, Aggregator aggregator): base(options, aggregator) {
+
             fileStream = new FileStream(Path.Combine(path, FileName), FileMode.Open, FileAccess.Read, FileShare.Read);
             streamReader = new StreamReader(fileStream);
 
         }
 
-        protected virtual int GetTimeStamp(string[] lineParts) {
-            return Convert.ToInt32(lineParts[0]);
-        }
-        protected abstract string GetRowValue(string[] lineParts);
-        protected abstract string[] GetColumnValues(string[] lineParts);
-
-        public override void ReadNextTimeStamp(int timeIndex) {
-            while(!streamReader.EndOfStream) {
+        protected override bool ReadNextRecord(out string[] output) {
+            if(streamReader.EndOfStream) {
+                output = null;
+                return false;
+            } else {
                 string line = streamReader.ReadLine();
-                string[] lineParts = line.Split(',');
-                var timeStamp = GetTimeStamp(lineParts);
-                if(timeStamp >= options.StartTime) {
-                    timeStamp -= options.StartTime;
-                    int currentTimeIndex = (int)(timeStamp / this.options.TimeFrame);
-                    if(timeIndex == currentTimeIndex) {
-                        aggregator.AddValue(GetRowValue(lineParts), GetColumnValues(lineParts));
-                    } else {
-                        break;
-                    }
-                }
+                output = line.Split(',');
+                return true;
             }
         }
-
+        protected override int GetTimeStamp(string[] lineParts) {
+            return Convert.ToInt32(lineParts[0]);
+        }
+      
         public override void Dispose() {
             streamReader.Close();
             streamReader.Dispose();
